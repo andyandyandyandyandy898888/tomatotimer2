@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Focus Timer</title>
-<style>
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -22,7 +22,6 @@
       padding: 1rem;
       transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       overflow-x: hidden;
-      line-height: 1.5;
     }
 
     body.break-mode {
@@ -38,26 +37,13 @@
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 1.5rem;
-      border-radius: 20px;
+      padding: 2.5rem;
+      border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 1200px;
       transform: translateY(0);
       animation: fadeInUp 0.8s ease-out;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-areas: 
-        "header"
-        "timer"
-        "progress"
-        "controls"
-        "modes"
-        "stats"
-        "tasks"
-        "quote"
-        "extras";
-      gap: 1.5rem;
     }
 
     @keyframes fadeInUp {
@@ -72,19 +58,12 @@
     }
 
     h1 {
-      grid-area: header;
       font-size: clamp(1.8rem, 4vw, 2.5rem);
-      font-weight: 600;
-      margin-bottom: 0;
+      font-weight: 300;
+      margin-bottom: 2rem;
       letter-spacing: -0.02em;
       opacity: 0;
       animation: fadeIn 1s ease-out 0.2s forwards;
-      text-align: center;
-    }
-
-    #title2 {
-      font-weight: 600;
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
     }
 
     @keyframes fadeIn {
@@ -93,22 +72,20 @@
 
     .timer-container {
       position: relative;
-      width: 100%;
-      max-width: 220px; /* Adjust based on your design */
-      margin: 0 auto;
+      margin: 2rem 0;
     }
 
     .timer-circle {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1/1; /* Ensures perfect circle */
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 1rem;
       position: relative;
     }
-    
+
     .timer-circle svg {
+      transform: rotate(-90deg);
       width: 100%;
       height: 100%;
-      transform: rotate(-90deg);
     }
 
     .timer-circle .progress-bg {
@@ -128,17 +105,16 @@
 
     .timer {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 53%;
+      left: 45%;
       transform: translate(-50%, -50%);
       font-size: clamp(2rem, 6vw, 3rem);
-      font-weight: 300;
-      text-align: center;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      line-height: 1; /* Prevents vertical misalignment */
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.4s forwards;
     }
+
     .timer.pulse {
       animation: pulse 1s ease-in-out infinite alternate;
     }
@@ -150,47 +126,8 @@
       }
     }
 
-    .level-progress {
-      grid-area: progress;
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-      position: relative;
-      opacity: 0;
-      animation: fadeIn 1s ease-out 0.6s forwards;
-    }
-
-    .progress-bar {
-      height: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .progress-bar::after {
-      content: '';
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff8a00, #e52e71);
-      border-radius: 6px;
-      transition: width 0.5s ease;
-    }
-
-    .progress-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
     .controls {
-      grid-area: controls;
-      margin: 0;
+      margin: 2rem 0;
       display: flex;
       gap: 1rem;
       justify-content: center;
@@ -200,7 +137,7 @@
     }
 
     .btn {
-      padding: 0.75rem 1.25rem;
+      padding: 0.75rem 1.5rem;
       font-size: 0.95rem;
       font-weight: 500;
       border: none;
@@ -213,7 +150,6 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       position: relative;
       overflow: hidden;
-      min-width: 100px;
     }
 
     .btn::before {
@@ -244,18 +180,17 @@
     }
 
     .mode-switch {
-      grid-area: modes;
       display: flex;
       gap: 0.5rem;
       justify-content: center;
-      margin: 0;
+      margin: 1.5rem 0;
       flex-wrap: wrap;
       opacity: 0;
       animation: fadeIn 1s ease-out 0.8s forwards;
     }
 
     .mode-btn {
-      padding: 0.6rem 1rem;
+      padding: 0.5rem 1rem;
       font-size: 0.85rem;
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 20px;
@@ -264,7 +199,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
-      min-width: 80px;
     }
 
     .mode-btn.active {
@@ -279,25 +213,18 @@
       transform: translateY(-1px);
     }
 
-    .stats-container {
-      grid-area: stats;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin: 0;
+    .stats {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       opacity: 0;
       animation: fadeIn 1s ease-out 1s forwards;
     }
 
-    .stats {
-      padding: 0.8rem;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
     .stats-number {
-      font-size: 1.5rem;
+      font-size: 2rem;
       font-weight: 300;
       color: #ffffff;
       margin-bottom: 0.25rem;
@@ -316,13 +243,12 @@
     }
 
     .stats-label {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       opacity: 0.8;
     }
 
     .task-section {
-      grid-area: tasks;
-      margin: 0;
+      margin-top: 2rem;
       opacity: 0;
       animation: fadeIn 1s ease-out 1.2s forwards;
       display: flex;
@@ -363,8 +289,6 @@
       text-align: left;
       max-height: 150px;
       overflow-y: auto;
-      margin: 0;
-      padding: 0;
     }
 
     .task-item {
@@ -400,8 +324,7 @@
     }
 
     .quote {
-      grid-area: quote;
-      margin: 0;
+      margin: 1.5rem 0;
       font-style: italic;
       opacity: 0.8;
       font-size: 0.9rem;
@@ -409,40 +332,264 @@
       transition: all 0.5s ease;
       opacity: 0;
       animation: fadeIn 1s ease-out 1.4s forwards;
-      text-align: center;
     }
 
     .extras {
-      grid-area: extras;
-      margin: 0;
+      margin-top: 1.5rem;
       opacity: 0;
       animation: fadeIn 1s ease-out 1.6s forwards;
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
     }
 
     .notification {
       position: fixed;
-      top: 1rem;
-      right: 1rem;
-      left: 1rem;
+      top: 2rem;
+      right: 2rem;
       background: rgba(255, 255, 255, 0.95);
       color: #333;
-      padding: 1rem;
+      padding: 1rem 1.5rem;
       border-radius: 12px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      transform: translateY(-100px);
+      transform: translateX(400px);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       backdrop-filter: blur(20px);
-      z-index: 1000;
-      max-width: 400px;
-      margin: 0 auto;
     }
 
     .notification.show {
-      transform: translateY(0);
+      transform: translateX(0);
+    }
+
+    /* Desktop Layout */
+    @media (min-width: 1024px) {
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+          "header header"
+          "timer controls"
+          "modes modes"
+          "stats quote"
+          "tasks extras";
+        gap: 2rem;
+        text-align: left;
+        padding: 3rem;
+        max-width: 1200px;
+      }
+
+      h1 {
+        grid-area: header;
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .timer-container {
+        grid-area: timer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .timer-circle {
+        width: 220px;
+        height: 220px;
+      }
+
+      .controls {
+        grid-area: controls;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+        margin: 0;
+      }
+
+      .controls .btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+      }
+
+      .mode-switch {
+        grid-area: modes;
+        justify-content: center;
+        margin: 0;
+      }
+
+      .stats {
+        grid-area: stats;
+        margin: 0;
+        text-align: center;
+      }
+
+      .quote {
+        grid-area: quote;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+
+      .task-section {
+        grid-area: tasks;
+        margin: 0;
+        text-align: left;
+      }
+
+      .extras {
+        grid-area: extras;
+        margin: 0;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+      }
+    }
+
+    /* Tablet Layout */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .container {
+        max-width: 700px;
+        padding: 2.5rem;
+      }
+
+      .timer-circle {
+        width: 200px;
+        height: 200px;
+      }
+
+      .controls {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+
+      .btn {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+      }
+
+      .task-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .stats {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Mobile Layout */
+    @media (max-width: 767px) {
+      .container {
+        max-width: 100%;
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      
+      .timer-circle {
+        width: 160px;
+        height: 160px;
+      }
+      
+      .controls {
+        gap: 0.75rem;
+        flex-direction: column;
+      }
+
+      .controls .btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+      
+      .mode-switch {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .mode-btn {
+        flex: 1;
+        min-width: 90px;
+      }
+      
+      .task-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .task-input-group .btn {
+        width: 100%;
+      }
+
+      .stats {
+        padding: 1rem;
+      }
+    }
+
+    /* Small Mobile Layout */
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+        margin: 0.5rem;
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .timer-circle {
+        width: 140px;
+        height: 140px;
+      }
+
+      .timer {
+        font-size: 2.2rem;
+      }
+      
+      .mode-switch {
+        gap: 0.25rem;
+      }
+      
+      .mode-btn {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.8rem;
+        min-width: 80px;
+      }
+
+      .controls .btn {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+      }
+
+      .stats-number {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Ultra-wide screens */
+    @media (min-width: 1400px) {
+      .container {
+        max-width: 1400px;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-areas: 
+          "header header header"
+          "timer controls stats"
+          "modes modes modes"
+          "tasks quote extras";
+        gap: 3rem;
+      }
+
+      .timer-circle {
+        width: 250px;
+        height: 250px;
+      }
+
+      .timer {
+        font-size: 4rem;
+      }
     }
 
     /* Custom scrollbar */
@@ -461,241 +608,144 @@
     }
     
     .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.setting-group {
+  margin-bottom: 1.5rem;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.setting-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.level-progress {
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto;
+  position: relative;
+}
+
+.progress-bar {
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.achievement {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.achievement.locked {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.achievement-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.achievement-title {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.achievement-desc {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  
+#title2 {
+      padding-right: 100px;
+      font-weight: bold;
+      font-size: 900px; /* Changed from 900px to 90px */
     }
-
-    .modal.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal-content {
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      padding: 1.5rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      transform: translateY(20px);
-      transition: transform 0.3s ease;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal.show .modal-content {
-      transform: translateY(0);
-    }
-
-    .setting-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .setting-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-
-    .setting-group input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-
-    .achievement {
-      text-align: center;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .achievement.locked {
-      opacity: 0.5;
-      filter: grayscale(1);
-    }
-
-    .achievement-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .achievement-title {
-      font-weight: 500;
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .achievement-desc {
-      font-size: 0.7rem;
-      opacity: 0.8;
-    }
-
-    /* Tablet Layout (768px and up) */
-    @media (min-width: 768px) {
-      .container {
-        padding: 2rem;
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas: 
-          "header header"
-          "timer controls"
-          "progress modes"
-          "stats stats"
-          "tasks quote"
-          "extras extras";
-        gap: 1.5rem;
-      }
-
-      .stats-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .timer-circle {
-        max-width: 220px;
-      }
-
-      .controls {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .btn {
-        width: 100%;
-        max-width: 200px;
-      }
-
-      .task-input-group {
-        flex-direction: row;
-      }
-    }
-
-    /* Desktop Layout (1024px and up) */
-    @media (min-width: 1024px) {
-      .container {
-        padding: 2.5rem;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-areas: 
-          "header header header"
-          "timer controls stats"
-          "progress modes modes"
-          "tasks tasks quote"
-          "extras extras extras";
-        gap: 2rem;
-      }
-
-      .stats-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .quote {
-        text-align: left;
-        display: flex;
-        align-items: center;
-        font-size: 1.1rem;
-      }
-
-      .task-section {
-        grid-column: span 2;
-      }
-
-      .extras {
-        justify-content: flex-end;
-      }
-    }
-
-    /* Large Desktop Layout (1200px and up) */
-    @media (min-width: 1200px) {
-      .container {
-        max-width: 1400px;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-template-areas: 
-          "header header header header"
-          "timer controls stats quote"
-          "progress modes modes modes"
-          "tasks tasks tasks tasks"
-          "extras extras extras extras";
-      }
-
-      .timer-circle {
-        max-width: 250px;
-      }
-
-      .timer {
-        font-size: 3.5rem;
-      }
-    }
-
-    /* Small Mobile Layout (480px and below) */
-    @media (max-width: 480px) {
-      .container {
-        padding: 1rem;
-        border-radius: 16px;
-      }
-
-      .stats-container {
-        grid-template-columns: 1fr;
-      }
-
-      .controls {
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-
-      .mode-switch {
-        gap: 0.25rem;
-      }
-
-      .mode-btn {
-        padding: 0.5rem 0.7rem;
-        font-size: 0.8rem;
-        min-width: 70px;
-      }
-
-      .task-input-group {
-        flex-direction: column;
-      }
-
-      .task-input-group .btn {
-        width: 100%;
-      }
-    }
-</style>
+  </style>
 </head>
 <body>
   <div class="container">
@@ -703,9 +753,9 @@
     
     <div class="timer-container">
       <div class="timer-circle">
-        <svg viewBox="0 0 200 200">
-          <circle class="progress-bg" cx="100" cy="100" r="95"></circle>
-          <circle class="progress" id="progressCircle" cx="100" cy="100" r="85"></circle>
+        <svg>
+          <circle class="progress-bg" cx="90" cy="90" r="85"></circle>
+          <circle class="progress" cx="90" cy="90" r="85" id="progressCircle"></circle>
         </svg>
         <div class="timer" id="timer">25:00</div>
       </div>
@@ -825,18 +875,38 @@
   
   // ========== QUOTES ==========
 const quotes = [
-  "Naruto became a global cultural icon, introducing anime to millions worldwide. Elements like the Naruto run, ninja headbands, and jutsu became part of pop culture, helping the series break through language and cultural barriers to reach an international audience.",
-  "With over 250 million manga copies sold and billions in revenue from anime, movies, games, and merchandise, Naruto is one of the highest-grossing anime franchises ever. Its success opened doors for anime in global markets.",
-  "Unlike many anime, Naruto continued its story with Boruto, focusing on the next generation. This kept the franchise alive, attracted a younger audience, and allowed long-time fans to stay connected to the world they love.",
-  "Naruto stands out for its heartfelt themes—loneliness, perseverance, forgiveness, and peace. Characters like Naruto, Sasuke, and Itachi brought emotional complexity that gave the series lasting meaning and depth.",
-  "Spanning over 700 episodes and 15 years, Naruto maintained strong storytelling and character development. Its consistency and emotional payoff kept fans engaged from start to finish, solidifying its place in anime history.",
-  "Success is the sum of small efforts repeated day in and day out.",
-  "Focus on being productive instead of busy.",
-  "You don't have to be great to get started, but you have to get started to be great.",
-  "The expert in anything was once a beginner.",
-  "Progress, not perfection.",
-  "Small steps every day lead to big results."
+  "Naruto became a global cultural icon faster than One Piece, introducing anime to millions with the iconic Naruto run and headbands, something One Piece never achieved on the same pop-culture level.",
+  "Naruto has over 250 million manga copies sold with a much shorter run than One Piece, proving its higher sales per volume impact.",
+  "Naruto’s anime has a more consistent quality and pacing compared to One Piece’s extensive filler and slower pacing, making it more bingeable for new fans.",
+  "Naruto has significantly more fan-favorite character arcs like Itachi’s redemption and Naruto’s rise from nothing, whereas One Piece’s long arcs often lose emotional focus.",
+  "Naruto's emotional depth, exploring themes like loneliness, pain, and redemption, hits harder than One Piece’s more adventurous tone.",
+  "Naruto reached global mainstream popularity much earlier than One Piece, even before streaming anime was common.",
+  "The Naruto franchise includes Boruto, which extends the story and allows fans to stay connected with the original characters’ legacy, something One Piece lacks.",
+  "Naruto's final war arc brought nearly all characters together in a climactic way; One Piece hasn’t delivered that level of large-scale payoff yet.",
+  "Naruto’s villains like Pain, Madara, and Itachi have deeper philosophies compared to many of One Piece’s more caricatured antagonists.",
+  "Naruto’s jutsu system is more grounded and structured than One Piece’s devil fruits, which often feel random or gimmicky.",
+  "Naruto's animation quality (especially during important fights) is consistently praised, while One Piece’s early animation is often criticized.",
+  "The Chunin Exams arc is widely considered one of the greatest anime arcs, outperforming most early One Piece arcs in tension and character growth.",
+  "Naruto’s OST (like 'Sadness and Sorrow') is iconic and emotionally resonant, often ranked above One Piece’s soundtrack.",
+  "The rivalry between Naruto and Sasuke is more emotionally intense and central than Luffy’s loose competition with other pirates.",
+  "Naruto’s time skip into Shippuden showed significant growth in characters and stakes, while One Piece’s time skip didn’t offer the same emotional transformation.",
+  "Naruto's storyline resolved major plot threads (like Naruto’s parentage, Kurama, and peace) more satisfyingly than One Piece’s still ongoing mysteries.",
+  "Naruto was the top anime searched globally on Google for several consecutive years, beating One Piece in popularity trends.",
+  "Naruto has won more international anime awards compared to One Piece, especially in categories like Best Hero, Best Fight Scene, and Best Opening.",
+  "Naruto’s world-building through different ninja villages and clans offers more cultural variety than One Piece’s primarily ocean-based settings.",
+  "Naruto inspired more real-world cultural events like mass 'Naruto runs' and cosplay trends, surpassing One Piece’s reach in Western conventions.",
+  "More video games and adaptations based on Naruto received high ratings compared to One Piece titles, especially the Storm series.",
+  "Naruto’s fanbase is significantly more engaged on social platforms like TikTok and YouTube with more fan edits, theories, and tributes than One Piece.",
+  "Naruto had a bigger impact on Gen Z and millennial anime fans during their formative years, while One Piece was more niche in some regions.",
+  "Naruto’s filler episodes, while present, are better organized into arcs that are easier to skip compared to One Piece’s drawn-out pacing.",
+  "Naruto’s protagonist development—from outcast to Hokage—is more inspiring and emotionally fulfilling than Luffy’s relatively static personality.",
+  "Naruto merchandise consistently ranks higher in sales than One Piece across multiple platforms like Amazon and Anime Con circuits.",
+  "Naruto's legacy is strong enough that Boruto launched with massive hype, while One Piece has struggled with spin-off attempts.",
+  "Naruto has been more influential in motivating fans with quotes about perseverance and dreams than One Piece’s pirate-themed freedom talk.",
+  "Naruto’s final battle between Naruto and Sasuke is widely regarded as one of the most iconic anime fights of all time, unlike any single One Piece fight.",
+  "Naruto ended its story and still remains relevant, while One Piece continues without delivering a conclusive arc, leading to fatigue in some fans."
 ];
+
 
 
   // ========== ACHIEVEMENTS ==========
@@ -893,10 +963,9 @@ const quotes = [
 
   function updateProgressCircle() {
     const circumference = 2 * Math.PI * 85;
-    const offset = circumference - (timeLeft / totalTime) * circumference;
-    console.log('Progress:', offset, circumference);
+    const progress = ((totalTime - timeLeft) / totalTime) * circumference;
     progressCircle.style.strokeDasharray = circumference;
-    progressCircle.style.strokeDashoffset = offset;
+    progressCircle.style.strokeDashoffset = circumference - progress;
   }
 
   function startTimer() {
@@ -927,21 +996,6 @@ const quotes = [
       }
     }, 1000);
   }
-
-function resetTimer() {
-  pauseTimer();
-  if (mode === 'pomodoro') {
-    timeLeft = focusDuration * 60;
-    totalTime = focusDuration * 60;
-  } else if (mode === 'shortBreak') {
-    timeLeft = shortBreakDuration * 60;
-    totalTime = shortBreakDuration * 60;
-  } else if (mode === 'longBreak') {
-    timeLeft = longBreakDuration * 60;
-    totalTime = longBreakDuration * 60;
-  }
-  updateDisplay();
-}
 
   function pauseTimer() {
     clearInterval(timer);
@@ -1145,9 +1199,6 @@ function resetTimer() {
   });
 
   // Load all saved data
-  // Initialize progress circle
-  progressCircle.style.strokeDasharray = 2 * Math.PI * 85;
-  progressCircle.style.strokeDashoffset = 0;
   loadSettings();
   loadAchievements();
   updateXPDisplay();
