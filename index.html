@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Focus Timer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-x: hidden;
+    }
+
+    body.break-mode {
+      background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    }
+
+    body.dark {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 1200px;
+      transform: translateY(0);
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.2s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .timer-container {
+      position: relative;
+      margin: 2rem 0;
+    }
+
+    .timer-circle {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 1rem;
+      position: relative;
+    }
+
+    .timer-circle svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .timer-circle .progress-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 4;
+    }
+
+    .timer-circle .progress {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transition: stroke-dasharray 1s linear;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+
+    .timer {
+      position: absolute;
+      top: 53%;
+      left: 45%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.4s forwards;
+    }
+
+    .timer.pulse {
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      to {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+
+    .controls {
+      margin: 2rem 0;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.6s forwards;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: all 0.4s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.8s forwards;
+    }
+
+    .mode-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .mode-btn.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.05);
+    }
+
+    .mode-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .stats {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1s forwards;
+    }
+
+    .stats-number {
+      font-size: 2rem;
+      font-weight: 300;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+      animation: countUp 0.6s ease-out;
+    }
+
+    @keyframes countUp {
+      from { 
+        opacity: 0;
+        transform: translateY(10px) scale(0.8);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .stats-label {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .task-section {
+      margin-top: 2rem;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1.2s forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .task-input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .task-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .task-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .task-input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .task-list {
+      list-style: none;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: slideInLeft 0.4s ease-out;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .task-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .task-item.completed {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
+    .quote {
+      margin: 1.5rem 0;
+      font-style: italic;
+      opacity: 0.8;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      transition: all 0.5s ease;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1.4s forwards;
+    }
+
+    .extras {
+      margin-top: 1.5rem;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1.6s forwards;
+    }
+
+    .notification {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transform: translateX(400px);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(20px);
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    /* Desktop Layout */
+    @media (min-width: 1024px) {
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+          "header header"
+          "timer controls"
+          "modes modes"
+          "stats quote"
+          "tasks extras";
+        gap: 2rem;
+        text-align: left;
+        padding: 3rem;
+        max-width: 1200px;
+      }
+
+      h1 {
+        grid-area: header;
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .timer-container {
+        grid-area: timer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .timer-circle {
+        width: 220px;
+        height: 220px;
+      }
+
+      .controls {
+        grid-area: controls;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+        margin: 0;
+      }
+
+      .controls .btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+      }
+
+      .mode-switch {
+        grid-area: modes;
+        justify-content: center;
+        margin: 0;
+      }
+
+      .stats {
+        grid-area: stats;
+        margin: 0;
+        text-align: center;
+      }
+
+      .quote {
+        grid-area: quote;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+
+      .task-section {
+        grid-area: tasks;
+        margin: 0;
+        text-align: left;
+      }
+
+      .extras {
+        grid-area: extras;
+        margin: 0;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+      }
+    }
+
+    /* Tablet Layout */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .container {
+        max-width: 700px;
+        padding: 2.5rem;
+      }
+
+      .timer-circle {
+        width: 200px;
+        height: 200px;
+      }
+
+      .controls {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+
+      .btn {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+      }
+
+      .task-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .stats {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Mobile Layout */
+    @media (max-width: 767px) {
+      .container {
+        max-width: 100%;
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      
+      .timer-circle {
+        width: 160px;
+        height: 160px;
+      }
+      
+      .controls {
+        gap: 0.75rem;
+        flex-direction: column;
+      }
+
+      .controls .btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+      
+      .mode-switch {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .mode-btn {
+        flex: 1;
+        min-width: 90px;
+      }
+      
+      .task-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .task-input-group .btn {
+        width: 100%;
+      }
+
+      .stats {
+        padding: 1rem;
+      }
+    }
+
+    /* Small Mobile Layout */
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+        margin: 0.5rem;
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .timer-circle {
+        width: 140px;
+        height: 140px;
+      }
+
+      .timer {
+        font-size: 2.2rem;
+      }
+      
+      .mode-switch {
+        gap: 0.25rem;
+      }
+      
+      .mode-btn {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.8rem;
+        min-width: 80px;
+      }
+
+      .controls .btn {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+      }
+
+      .stats-number {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Ultra-wide screens */
+    @media (min-width: 1400px) {
+      .container {
+        max-width: 1400px;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-areas: 
+          "header header header"
+          "timer controls stats"
+          "modes modes modes"
+          "tasks quote extras";
+        gap: 3rem;
+      }
+
+      .timer-circle {
+        width: 250px;
+        height: 250px;
+      }
+
+      .timer {
+        font-size: 4rem;
+      }
+    }
+
+    /* Custom scrollbar */
+    .task-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .task-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    .task-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+    
+    .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.setting-group {
+  margin-bottom: 1.5rem;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.setting-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.level-progress {
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto;
+  position: relative;
+}
+
+.progress-bar {
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.achievement {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.achievement.locked {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.achievement-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.achievement-title {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.achievement-desc {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  
+#title2 {
+      padding-right: 100px;
+      font-weight: bold;
+      font-size: 900px; /* Changed from 900px to 90px */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title2">Tomato Timer</h1>
+    
+    <div class="timer-container">
+      <div class="timer-circle">
+        <svg>
+          <circle class="progress-bg" cx="90" cy="90" r="85"></circle>
+          <circle class="progress" cx="90" cy="90" r="85" id="progressCircle"></circle>
+        </svg>
+        <div class="timer" id="timer">25:00</div>
+      </div>
+    </div>
+
+    <div class="level-progress">
+      <div class="progress-bar" id="levelProgressBar"></div>
+      <div class="progress-text" id="levelProgressText">0%</div>
+    </div>
+    
+    <div class="controls">
+      <button class="btn" onclick="startTimer()">Start</button>
+      <button class="btn" onclick="pauseTimer()">Pause</button>
+      <button class="btn" onclick="resetTimer()">Reset</button>
+    </div>
+
+    <div class="mode-switch">
+      <button class="mode-btn active" onclick="setMode('pomodoro')">Focus</button>
+      <button class="mode-btn" onclick="setMode('shortBreak')">Short Break</button>
+      <button class="mode-btn" onclick="setMode('longBreak')">Long Break</button>
+    </div>
+
+    <div class="stats">
+      <div class="stats-number" id="pomodoroCount">0</div>
+      <div class="stats-label">Sessions Completed</div>
+    </div>
+    
+    <div class="stats">
+      <div class="stats-number" id="xpDisplay">0</div>
+      <div class="stats-label">XP</div>
+    </div>
+
+    <div class="stats">
+      <div class="stats-number" id="levelDisplay">1</div>
+      <div class="stats-label">Level</div>
+    </div>
+
+    <div class="task-section">
+      <div class="task-input-group">
+        <input type="text" class="task-input" id="taskInput" placeholder="What are you focusing on?">
+        <button class="btn" onclick="addTask()">Add</button>
+      </div>
+      <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <div class="quote" id="quote">"The way to get started is to quit talking and begin doing."</div>
+
+    <div class="extras">
+      <button class="btn" onclick="toggleDarkMode()">Toggle Theme</button>
+      <button class="btn" onclick="openSettings()">Settings</button>
+    <!-- Add this button to your extras div -->
+      <button class="btn" onclick="openAchievements()">Achievements</button>
+   </div>
+  </div>
+  
+  <div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <h2>Timer Settings</h2>
+    <div class="setting-group">
+      <label for="focusTime">Focus Time (minutes):</label>
+      <input type="number" id="focusTime" min="1" max="120" value="25">
+    </div>
+    <div class="setting-group">
+      <label for="shortBreakTime">Short Break (minutes):</label>
+      <input type="number" id="shortBreakTime" min="1" max="30" value="5">
+    </div>
+    <div class="setting-group">
+      <label for="longBreakTime">Long Break (minutes):</label>
+      <input type="number" id="longBreakTime" min="1" max="60" value="15">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="saveSettings()">Save</button>
+      <button class="btn" onclick="closeSettings()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="achievementsModal">
+  <div class="modal-content">
+    <h2>Your Achievements</h2>
+    <div class="achievements-grid" id="achievementsGrid"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAchievements()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+  // ========== DOM ELEMENTS ==========
+  const timerDisplay = document.getElementById('timer');
+  const pomodoroCountDisplay = document.getElementById('pomodoroCount');
+  const quoteDisplay = document.getElementById('quote');
+  const progressCircle = document.getElementById('progressCircle');
+  const notification = document.getElementById('notification');
+
+  // ========== TIMER VARIABLES ==========
+  let timer;
+  let timeLeft = 1500; // 25 minutes
+  let totalTime = 1500;
+  let isRunning = false;
+  let mode = 'pomodoro';
+  
+  // ========== SETTINGS VARIABLES ==========
+  let focusDuration = 25;
+  let shortBreakDuration = 5;
+  let longBreakDuration = 15;
+  
+  // ========== GAMIFICATION VARIABLES ==========
+  let pomodoroCount = parseInt(localStorage.getItem('pomodoroCount')) || 0;
+  let xp = parseInt(localStorage.getItem('xp')) || 0;
+  let level = parseInt(localStorage.getItem('level')) || 1;
+  let xpToNextLevel = level * 100; // Initial calculation
+  
+  // ========== QUOTES ==========
+const quotes = [
+  "Naruto became a global cultural icon, introducing anime to millions worldwide. Elements like the Naruto run, ninja headbands, and jutsu became part of pop culture, helping the series break through language and cultural barriers to reach an international audience.",
+  "With over 250 million manga copies sold and billions in revenue from anime, movies, games, and merchandise, Naruto is one of the highest-grossing anime franchises ever. Its success opened doors for anime in global markets.",
+  "Unlike many anime, Naruto continued its story with Boruto, focusing on the next generation. This kept the franchise alive, attracted a younger audience, and allowed long-time fans to stay connected to the world they love.",
+  "Naruto stands out for its heartfelt themes—loneliness, perseverance, forgiveness, and peace. Characters like Naruto, Sasuke, and Itachi brought emotional complexity that gave the series lasting meaning and depth.",
+  "Spanning over 700 episodes and 15 years, Naruto maintained strong storytelling and character development. Its consistency and emotional payoff kept fans engaged from start to finish, solidifying its place in anime history.",
+  "Success is the sum of small efforts repeated day in and day out.",
+  "Focus on being productive instead of busy.",
+  "You don't have to be great to get started, but you have to get started to be great.",
+  "The expert in anything was once a beginner.",
+  "Progress, not perfection.",
+  "Small steps every day lead to big results."
+];
+
+
+  // ========== ACHIEVEMENTS ==========
+  const achievements = [
+    {
+      id: 'first_session',
+      title: 'First Step',
+      description: 'Complete your first focus session',
+      icon: '🏁',
+      unlocked: false,
+      check: () => pomodoroCount >= 1
+    },
+    {
+      id: 'five_sessions',
+      title: 'Getting Serious',
+      description: 'Complete 5 focus sessions',
+      icon: '🔥',
+      unlocked: false,
+      check: () => pomodoroCount >= 5
+    },
+    {
+      id: 'level_5',
+      title: 'Seasoned',
+      description: 'Reach level 5',
+      icon: '⭐',
+      unlocked: false,
+      check: () => level >= 5
+    },
+    {
+      id: 'marathon',
+      title: 'Marathon',
+      description: 'Complete 10 sessions in one day',
+      icon: '🏃',
+      unlocked: false,
+      check: () => false // You'd need to implement daily tracking for this
+    },
+    {
+      id: 'early_bird',
+      title: 'Early Bird',
+      description: 'Complete a session before 8 AM',
+      icon: '🌅',
+      unlocked: false,
+      check: () => false // Needs time tracking
+    }
+  ];
+
+  // ========== TIMER FUNCTIONS ==========
+  function updateDisplay() {
+    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    const seconds = String(timeLeft % 60).padStart(2, '0');
+    timerDisplay.textContent = `${minutes}:${seconds}`;
+    updateProgressCircle();
+  }
+
+  function updateProgressCircle() {
+    const circumference = 2 * Math.PI * 85;
+    const progress = ((totalTime - timeLeft) / totalTime) * circumference;
+    progressCircle.style.strokeDasharray = circumference;
+    progressCircle.style.strokeDashoffset = circumference - progress;
+  }
+
+  function startTimer() {
+    if (isRunning) return;
+    isRunning = true;
+    timerDisplay.classList.add('pulse');
+    
+    timer = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateDisplay();
+      } else {
+        clearInterval(timer);
+        isRunning = false;
+        timerDisplay.classList.remove('pulse');
+        
+        showNotification("Time's up! Great work! 🎉");
+        showRandomQuote();
+        
+        if (mode === 'pomodoro') {
+          pomodoroCount++;
+          pomodoroCountDisplay.textContent = pomodoroCount;
+          localStorage.setItem('pomodoroCount', pomodoroCount);
+          addXP(50);
+        } else {
+          addXP(10);
+        }
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    clearInterval(timer);
+    isRunning = false;
+    timerDisplay.classList.remove('pulse');
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    if (mode === 'pomodoro') {
+      timeLeft = focusDuration * 60;
+      totalTime = focusDuration * 60;
+    } else if (mode === 'shortBreak') {
+      timeLeft = shortBreakDuration * 60;
+      totalTime = shortBreakDuration * 60;
+    } else if (mode === 'longBreak') {
+      timeLeft = longBreakDuration * 60;
+      totalTime = longBreakDuration * 60;
+    }
+    updateDisplay();
+  }
+
+  function setMode(selectedMode) {
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    mode = selectedMode;
+    
+    if (selectedMode === 'pomodoro') {
+      document.body.classList.remove('break-mode');
+    } else {
+      document.body.classList.add('break-mode');
+    }
+    
+    resetTimer();
+  }
+
+  // ========== TASK FUNCTIONS ==========
+  function addTask() {
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    if (taskInput.value.trim() === '') return;
+    
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    li.textContent = taskInput.value;
+    li.onclick = () => li.classList.toggle('completed');
+    
+    taskList.appendChild(li);
+    taskInput.value = '';
+  }
+
+  // ========== UI FUNCTIONS ==========
+  function showRandomQuote() {
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteDisplay.style.opacity = '0';
+    setTimeout(() => {
+      quoteDisplay.textContent = `"${quote}"`;
+      quoteDisplay.style.opacity = '0.8';
+    }, 200);
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark');
+  }
+
+  function showNotification(message) {
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }
+
+  // ========== SETTINGS FUNCTIONS ==========
+  function openSettings() {
+    document.getElementById('focusTime').value = focusDuration;
+    document.getElementById('shortBreakTime').value = shortBreakDuration;
+    document.getElementById('longBreakTime').value = longBreakDuration;
+    document.getElementById('settingsModal').classList.add('show');
+  }
+
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('show');
+  }
+
+  function saveSettings() {
+    focusDuration = parseInt(document.getElementById('focusTime').value) || 25;
+    shortBreakDuration = parseInt(document.getElementById('shortBreakTime').value) || 5;
+    longBreakDuration = parseInt(document.getElementById('longBreakTime').value) || 15;
+    
+    localStorage.setItem('focusDuration', focusDuration);
+    localStorage.setItem('shortBreakDuration', shortBreakDuration);
+    localStorage.setItem('longBreakDuration', longBreakDuration);
+    
+    closeSettings();
+    resetTimer();
+  }
+
+  function loadSettings() {
+    const savedFocus = localStorage.getItem('focusDuration');
+    const savedShort = localStorage.getItem('shortBreakDuration');
+    const savedLong = localStorage.getItem('longBreakDuration');
+    
+    if (savedFocus) focusDuration = parseInt(savedFocus);
+    if (savedShort) shortBreakDuration = parseInt(savedShort);
+    if (savedLong) longBreakDuration = parseInt(savedLong);
+    
+    resetTimer();
+  }
+
+  // ========== GAMIFICATION FUNCTIONS ==========
+  function calculateXPToNextLevel(currentLevel) {
+    return currentLevel * 100;
+  }
+
+  function updateXPDisplay() {
+    document.getElementById('xpDisplay').textContent = xp;
+    document.getElementById('levelDisplay').textContent = level;
+    
+    const progressPercent = Math.min(100, (xp / xpToNextLevel) * 100);
+    document.querySelector('.progress-bar').style.width = `${progressPercent}%`;
+    document.getElementById('levelProgressText').textContent = `${Math.round(progressPercent)}%`;
+  }
+
+  function addXP(amount) {
+    xp += amount;
+    
+    while (xp >= xpToNextLevel) {
+      xp -= xpToNextLevel;
+      level++;
+      xpToNextLevel = calculateXPToNextLevel(level);
+      showNotification(`Level Up! 🎉 Now Level ${level}`);
+    }
+    
+    localStorage.setItem('xp', xp);
+    localStorage.setItem('level', level);
+    
+    updateXPDisplay();
+    checkAchievements();
+  }
+
+  function checkAchievements() {
+    let newAchievements = false;
+    
+    achievements.forEach(achievement => {
+      if (!achievement.unlocked && achievement.check()) {
+        achievement.unlocked = true;
+        newAchievements = true;
+        showNotification(`Achievement Unlocked: ${achievement.title}!`);
+      }
+    });
+    
+    if (newAchievements) {
+      saveAchievements();
+      updateAchievementsDisplay();
+    }
+  }
+
+  function saveAchievements() {
+    const unlockedIds = achievements.filter(a => a.unlocked).map(a => a.id);
+    localStorage.setItem('achievements', JSON.stringify(unlockedIds));
+  }
+
+  function loadAchievements() {
+    const unlockedIds = JSON.parse(localStorage.getItem('achievements')) || [];
+    achievements.forEach(achievement => {
+      achievement.unlocked = unlockedIds.includes(achievement.id);
+    });
+  }
+
+  function updateAchievementsDisplay() {
+    const grid = document.getElementById('achievementsGrid');
+    grid.innerHTML = '';
+    
+    achievements.forEach(achievement => {
+      const achievementEl = document.createElement('div');
+      achievementEl.className = `achievement ${achievement.unlocked ? '' : 'locked'}`;
+      achievementEl.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-title">${achievement.title}</div>
+        <div class="achievement-desc">${achievement.description}</div>
+      `;
+      grid.appendChild(achievementEl);
+    });
+  }
+
+  function openAchievements() {
+    updateAchievementsDisplay();
+    document.getElementById('achievementsModal').classList.add('show');
+  }
+
+  function closeAchievements() {
+    document.getElementById('achievementsModal').classList.remove('show');
+  }
+
+  // ========== INITIALIZATION ==========
+  document.getElementById('taskInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      addTask();
+    }
+  });
+
+  // Load all saved data
+  loadSettings();
+  loadAchievements();
+  updateXPDisplay();
+  updateDisplay();
+  showRandomQuote();
+</script>
+</body>
+</html>
